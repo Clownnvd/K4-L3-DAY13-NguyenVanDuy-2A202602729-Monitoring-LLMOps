@@ -96,4 +96,4 @@ Mỗi runbook đi từ Metrics → Logs → Traces rồi mới chọn cách kh�
 - [x] Project Langfuse cá nhân có 18 root trace, prompt v1/v2 và bằng chứng promote/rollback.
 - [x] Pytest 28 pass, log validator 100/100, dashboard validator 6/6.
 - [x] `.env`, `config/challenge.json`, `data/logs.jsonl`, `.venv/` đều bị Git ignore.
-- [ ] Đối chiếu commit cuối trên GitHub và nộp URL + SHA qua VLearn.
+- [x] Đối chiếu commit cuối trên GitHub và nộp URL có SHA cố định qua VLearn.
