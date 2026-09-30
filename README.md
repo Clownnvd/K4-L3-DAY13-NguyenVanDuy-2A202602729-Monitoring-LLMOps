@@ -192,6 +192,14 @@ Không capture raw prompt/output chứa PII vì người dùng có thể nhập 
 
 Dashboard dùng `data/logs.jsonl` làm nguồn chuẩn và giữ đúng 6 panel trong `config/dashboard.yaml`. Panel latency phải có P50/P95/P99 và TTFT; panel errors phải thể hiện cả retrieval success. Sau đó hoàn thiện:
 
+Màn dashboard local của bài làm này chạy bằng thư viện chuẩn Python và PyYAML đã có trong `requirements.txt`:
+
+```bash
+python dashboard/server.py --port 8765
+```
+
+Mở `http://127.0.0.1:8765` để xem sáu panel. Sau khi có log, trang tự đọc lại mỗi 30 giây; `http://127.0.0.1:8765/incident-log?cid=req-<8-hex>` hiển thị hai event của một request từ chính file JSONL. Dashboard chỉ bind `127.0.0.1` và không thay thế Langfuse trong phần trace/prompt.
+
 - `config/slo.yaml`: giải thích hoặc điều chỉnh SLO, tính error budget;
 - `config/alert_rules.yaml`: ba alert symptom-based, có duration, severity, owner, Slack channel và runbook;
 - `docs/alerts.md`: cách kiểm tra và mitigation cho từng alert.

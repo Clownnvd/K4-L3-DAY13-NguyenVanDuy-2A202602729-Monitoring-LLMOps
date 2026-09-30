@@ -7,7 +7,7 @@ from dataclasses import dataclass
 from . import metrics
 from .mock_llm import FakeLLM
 from .mock_rag import retrieve
-from .pii import hash_user_id, summarize_text
+from .pii import hash_user_id, scrub_text, summarize_text
 from .prompt_management import resolve_prompt
 from .tracing import get_langfuse_client, observe, propagate_attributes, tracing_enabled
 
@@ -40,12 +40,12 @@ class LabAgent:
         langfuse_client = get_langfuse_client()
         with propagate_attributes(
             user_id=hash_user_id(user_id),
-            session_id=session_id,
-            tags=["lab", feature, self.model],
+            session_id=hash_user_id(session_id),
+            tags=["lab", scrub_text(feature), self.model],
             trace_name="day13-agent-request",
             environment=os.getenv("APP_ENV", "dev"),
             metadata={
-                "feature": feature,
+                "feature": scrub_text(feature),
                 "model": self.model,
                 "correlation_id": correlation_id,
             },
@@ -71,8 +71,6 @@ class LabAgent:
                 },
                 version=prompt.version,
             )
-            # TODO (CP2): instrument retrieve() and FakeLLM.generate() as child
-            # observations. The nested generation must receive prompt, usage and cost.
             with propagate_attributes(prompt=prompt.managed_prompt):
                 response = self.llm.generate(prompt.text)
             quality_score = self._heuristic_quality(message, response.text, docs)

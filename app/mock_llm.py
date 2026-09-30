@@ -5,6 +5,7 @@ import time
 from dataclasses import dataclass
 
 from .incidents import STATE
+from .tracing import get_langfuse_client, observe, tracing_enabled
 
 
 @dataclass
@@ -25,6 +26,7 @@ class FakeLLM:
     def __init__(self, model: str = "claude-sonnet-4-5") -> None:
         self.model = model
 
+    @observe(name="generation", as_type="generation", capture_input=False, capture_output=False)
     def generate(self, prompt: str) -> FakeResponse:
         started = time.perf_counter()
         time.sleep(0.05)  # mô phỏng thời điểm token đầu tiên sẵn sàng
@@ -38,6 +40,15 @@ class FakeLLM:
             "Starter answer. You should improve this output logic and add better quality checks. "
             "Use retrieved context and keep responses concise."
         )
+        if tracing_enabled():
+            get_langfuse_client().update_current_generation(
+                model=self.model,
+                usage_details={"input": input_tokens, "output": output_tokens},
+                cost_details={
+                    "input": round(input_tokens * 3 / 1_000_000, 6),
+                    "output": round(output_tokens * 15 / 1_000_000, 6),
+                },
+            )
         return FakeResponse(
             text=answer,
             usage=FakeUsage(input_tokens, output_tokens),

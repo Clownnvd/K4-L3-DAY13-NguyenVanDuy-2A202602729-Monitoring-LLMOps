@@ -3,11 +3,11 @@ primary_slo:
   name: fast_successful_requests
   window: 28d
   sli:
-    good_event: 'event == "response_sent" and latency_ms <= 3000'
+    good_event: 'event == "response_sent" and latency_ms <= 1000'
     total_event: 'event == "request_received"'
   target_percent: 99.5
   error_budget_percent: 0.5
-  note: Học viên phải giải thích hoặc điều chỉnh ngưỡng bằng baseline của mình. Ví dụ nếu có 10,000 request trong cửa sổ 28 ngày, error budget 0.5% nghĩa là tối đa 50 request được phép không đạt SLO.
+  note: 'Baseline local 30/09/2026: P95=159 ms trên 10 request. Ngưỡng 1000 ms đủ rộng cho dao động nhỏ nhưng phát hiện rõ chậm 2,5 giây của practice. Mục tiêu 99,5% trong 28 ngày cho phép tối đa 50 request không đạt trên 10.000 request. Đây là SLO thí điểm, chưa được xác nhận bằng tải thật.'
 guardrails:
   error_rate_pct_max: 2
   daily_cost_usd_max: 2.5
